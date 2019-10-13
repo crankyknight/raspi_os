@@ -1,5 +1,6 @@
 #include "mem.h"
 .section ".text.boot"
+.extern el1_setup
 
 .globl _boot_entry
 _boot_entry:
@@ -10,9 +11,10 @@ _boot_entry:
     /*Zero out bss section */
     adr x0, __bss_start
     adr x1, __bss_end
+    sub x1, x1, x0
     bl   memzero
 
-    mov sp, #STACK_BASE
+    bl el1_setup
     b   kernel_main
 
 halt_proc:

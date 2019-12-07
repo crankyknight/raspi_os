@@ -21,7 +21,7 @@ typedef struct aux_mini_uart_regs_t{
 
 extern reg32* AUX_ENABLES;
 extern aux_mini_uart_regs_t* mini_uart;
-extern void uart_init();
+extern void init_uart();
 extern uint8 uart_read_available();
 extern uint8 uart_read();
 extern void uart_write(uint8 data);

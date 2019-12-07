@@ -2,6 +2,7 @@ ENTRY(_boot_entry)
 SECTIONS{
     .text : 
     {
+        KEEP(*(.vectors))
         KEEP(*(.text.boot))
         *(.text)
     }

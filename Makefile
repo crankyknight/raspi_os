@@ -8,7 +8,8 @@ BINS = raspios.elf
 CC = $(CC_BASE)gcc
 OBJDUMP = $(CC_BASE)objdump
 
-CFLAGS += -fPIC -ffreestanding -mcpu=cortex-a53 -mgeneral-regs-only -Wall -Wextra
+CFLAGS += -fPIC -ffreestanding -mcpu=cortex-a53 -mgeneral-regs-only -Wall -Wextra\
+		  -ffunction-sections -fdata-sections
 DISAS_FLAGS = -h -D
 ifeq ($(DB), 1)
 	CFLAGS += -g3
@@ -18,6 +19,7 @@ endif
 
 LINK_SCRIPT = linker.ld
 LDFLAGS = -T$(LINK_SCRIPT) -Wl,-Map=$(BUILD_DIR)/$(BINS:.elf=.map) \
+			-Wl,--gc-sections\
 			-nostartfiles -nostdlib -ffreestanding
 BUILD_DIR = build
 

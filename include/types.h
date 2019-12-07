@@ -11,6 +11,7 @@ typedef signed int int32;
 typedef signed long long int64;
 
 typedef volatile unsigned int reg32;
+typedef volatile unsigned long long reg64;
 
 /* Below used to define reserved registers
  * Works as preprocessor runs first */

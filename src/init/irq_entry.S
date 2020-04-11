@@ -1,6 +1,7 @@
 #include <arm.h>
 
 .section ".text"
+.extern dump_regs
 
 /* Context includes x0-x30, spsr(for debug), elr(for debug), in that order */
 #define CONTEXT_STACK_SIZE  ((31 + 2) * 8)
@@ -12,8 +13,10 @@
     .endm
 
 .macro ehandler_loop_infinite e_handler
+\e_handler :
     context_save
-    \e_handler : b \e_handler
+    bl dump_regs
+    1: b 1b
     .endm
 
 .macro context_save 
@@ -58,7 +61,7 @@
     ldp x24, x25, [sp, #(16 * 12)]
     ldp x26, x27, [sp, #(16 * 13)]
     ldp x28, x29, [sp, #(16 * 14)]
-    ldr x30, [sp, #((16 * 14) + 8)]
+    ldr x30, [sp, #(16 * 15)]
 
     add sp, sp, #CONTEXT_STACK_SIZE
     .endm
@@ -82,7 +85,7 @@ vector_table :
     vtable_entry    serror_lower_el_a64
     
     vtable_entry    sync_lower_el_a32
-    vtable_entry    irq_lower_el_a32
+    vtable_entry    irq_lower_el_a32 
     vtable_entry    fiq_lower_el_a32
     vtable_entry    serror_lower_el_a32
 
@@ -118,17 +121,17 @@ irq_cur_el_spx :
 .section ".text"
 .global init_interrupts_base
 init_interrupts_base :
-    ldr x0, vector_table
+    ldr x0, =vector_table
     msr VBAR_EL1, x0
     ret
 
 .global irq_enable
 irq_enable :
-    msr daifset, #2
+    msr daifclr, #2
     ret
 
 .global irq_disable
 irq_disable :
-    msr daifclr, #2
+    msr daifset, #2
     ret
 

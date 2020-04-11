@@ -10,9 +10,11 @@ OBJDUMP = $(CC_BASE)objdump
 
 CFLAGS += -fPIC -ffreestanding -mcpu=cortex-a53 -mgeneral-regs-only -Wall -Wextra\
 		  -ffunction-sections -fdata-sections
+
 DISAS_FLAGS = -h -D
 ifeq ($(DB), 1)
 	CFLAGS += -g3
+	CFLAGS += -DRASPIOS_QEMU_SIM
 else
 	CFLAGS += -O2
 endif
@@ -61,7 +63,7 @@ $(BUILD_DIR)/%.o : $$(call get-src,%)
 sim :
 	cd $(BUILD_DIR) && $(SIM) -m 256 -M raspi3 -serial null -serial stdio -kernel $(BINS) 
 sim_db :
-	cd $(BUILD_DIR) && $(SIM) -m 256 -s -S -M raspi3 -serial null -serial stdio -kernel $(BINS) 
+	cd $(BUILD_DIR) && $(SIM) -m 256 -s -S -M raspi3 -serial null -serial stdio -kernel $(BINS)  #Port 1234
 
 clean :
 	@echo "**Cleaning up..."

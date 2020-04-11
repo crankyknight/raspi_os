@@ -11,10 +11,10 @@ void kernel_main()
 
     init_interrupts();
     while(1){
-        //if(uart_read_available()){
-        //    uart_write('\n');
-        //    uart_write(uart_read());
-        //}
+        if(uart_read_available()){
+            uart_write('\n');
+            uart_write(uart_read());
+        }
     }
 
 }

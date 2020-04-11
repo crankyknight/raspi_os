@@ -8,13 +8,9 @@
 
 
 void init_systick_timer(uint64* irq_en){
-#ifdef ENABLE_TIMER_IRQ
     init_systimer();
     /* Interrupt handler called manually first time. */
-    systick_handler();
-
-    *irq_en |= IRQ_SYS_TIMER_1_EN;
-#endif
+    //systick_handler();
 }
 
 void enable_interrupts(uint64 irq_en){
@@ -27,8 +23,10 @@ extern void irq_enable();
 void init_interrupts(){
     uint64 irq_en;
     init_interrupts_base();
+#ifdef ENABLE_TIMER_IRQ
     /*Setup Timer interrupt */
     init_systick_timer(&irq_en);
+#endif
     /*Enable Interrupts */
     enable_interrupts(irq_en);
     /*Enable ARM interrupts */
@@ -39,20 +37,14 @@ void init_interrupts(){
 /* Interrupt Handlers */
 void irq_handler(){
     /* Identify IRQ */
-    uint64 irq_sts = *(unsigned int*)(ARM_INT_BASE + IRQ_PENDING_1_OFF); 
+    uint32* irq_sts = (unsigned int*)(ARM_INT_BASE + IRQ_BASIC_PENDING_OFF); 
 
     /* Service all interrupts */
 #ifdef ENABLE_TIMER_IRQ
-    if(irq_sts & SYSTIMER_INTR_MASK){
+    if(timer_intr_pending(irq_sts)){
+        RASPIOS_DBG(TIMER_DBG, "Systick intr rasied!\n");
         systick_handler();
-        irq_sts &= ~((uint64)SYSTIMER_INTR_MASK);
     }
 #endif
-
-    /* All known interrupts should be cleared by now */
-    if(irq_sts){
-        printf("Unknown interrupt raised. Shutting down...\n");
-        while(1);
-    }
 
 }
